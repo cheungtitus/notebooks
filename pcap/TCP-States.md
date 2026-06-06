@@ -10,8 +10,8 @@ Following show side by side comparison of filters available for displaying or ca
 | Only the SYN-ACK frame (second step of 3 way handshake)                                                      | `"(tcp.flags.syn == 1 and tcp.flags.ack == 1)"`                                                         | `"tcp[tcpflags] == (tcp-syn\|tcp-ack)"`       |
 | Only the ACK frame (third step of 3 way handshake or ACK corresponding to FIN or RST or keepalive empty ACK) | `"(tcp.flags.syn==0 and tcp.flags.ack==1 and tcp.len==0)"`                                              | `"tcp[tcpflags] == tcp-ack and tcp[14] == 0"` |
 | Only the DATA frames (after 3 way handshake but before RST or FIN)                                           | `"tcp.len > 0 and not tcp.flags.syn and not tcp.flags.ack and not tcp.flags.fin and not tcp.flags.rst"` | `"tcp[tcpflags] & 0x1F == 0 and tcp[14] > 0"` |
-| Only the FIN frame                                                                                           | `"tcp.flags.fin == 1 and tcp.flags.ack == 0 and tcp.flags.rst == 0"`                                    | `"tcp[tcpflags] == tcp-fin != 0"`             |
-| Only the RST frame                                                                                           | `"tcp.flags.rst == 1 and tcp.flags.ack == 0 and tcp.flags.fin == 0"`                                    | `"tcp[tcpflags] == tcp-rst != 0"`             |
+| Only the FIN frame                                                                                           | `"tcp.flags.fin == 1 and tcp.flags.ack == 0 and tcp.flags.rst == 0"`                                    | `"tcp[tcpflags] == tcp-fin"`                  |
+| Only the RST frame                                                                                           | `"tcp.flags.rst == 1 and tcp.flags.ack == 0 and tcp.flags.fin == 0"`                                    | `"tcp[tcpflags] == tcp-rst"`                  |
 
 Note:
 `tcp.flags.syn == 1` is the same as `tcp.flags.syn == True` so `(tcp.flags.syn == 1 and tcp.flags.ack == 1)` is the same as `(tcp.flags.syn == True and tcp.flags.ack == True)`.
@@ -24,7 +24,7 @@ PCAP=<pcap file name>
 tshark -tad -r ${PCAP} -Y "(tcp.flags.syn == 1 and tcp.flags.ack == 0 and tcp.len == 0 and !tcp.flags.fin and !tcp.flags.rst) or (tcp.flags.syn == 1 && tcp.flags.ack == 1) or (tcp.flags.syn == 0 && tcp.flags.ack == 1 && tcp.len == 0) or (tcp.flags.fin == 1 and tcp.flags.ack == 0 and tcp.flags.rst == 0) or (tcp.flags.rst == 1 and tcp.flags.ack == 0 and tcp.flags.fin == 0)"
 
 ## Capture Filter
-tcpdump -i any '(tcp[tcpflags] == tcp-syn) or (tcp[tcpflags] == (tcp-syn|tcp-ack) or (tcp[tcpflags] == tcp-ack and tcp[14] == 0) or (tcp[tcpflags] == tcp-fin != 0) or (tcp[tcpflags] == tcp-rst != 0)'
+tcpdump -i any '(tcp[tcpflags] == tcp-syn) or (tcp[tcpflags] == (tcp-syn|tcp-ack)） or (tcp[tcpflags] == tcp-ack and tcp[14] == 0) or (tcp[tcpflags] == tcp-fin) or (tcp[tcpflags] == tcp-rst)'
 ```
 
 ## TCP Completeness
